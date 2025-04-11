@@ -1,0 +1,67 @@
+<section class="carrito-section">
+    <div id="step-items" class="carrito-step">
+        <h2 class="step-title">Carrito</h2>
+        <ul id="cart-items" class="cart-items"></ul>
+        <p id="cart-total" class="text-right text-xl font-bold text-yellow-400 hidden">Total: S/ 0.00</p>
+        <div id="cart-empty" class="empty-cart-message hidden">
+            <h3>Carrito Vacío</h3>
+            <p>No tienes servicios añadidos aún.</p>
+            <button id="go-to-services" class="go-to-services-btn">Ver Servicios</button>
+        </div>
+        <div class="carrito-actions mt-4">
+            <button id="clear-cart-btn" class="clear-cart-btn hidden">Vaciar Carrito</button>
+            <button id="checkout-btn" class="checkout-btn hidden">Confirmar</button>
+        </div>
+    </div>
+
+    <div id="step-details" class="carrito-step hidden">
+        <h2 class="step-title">Detalles de la Reserva</h2>
+        <form id="order-form" class="space-y-4">
+            <div class="payment-detail">
+                <label for="order-name">Nombre</label>
+                <input type="text" id="order-name" placeholder="Tu nombre" required class="w-full p-2 border rounded">
+            </div>
+            <div class="payment-detail">
+                <label for="order-date">Fecha</label>
+                <input type="date" id="order-date" required class="w-full p-2 border rounded">
+            </div>
+            <div class="payment-detail">
+                <label for="order-time">Hora</label>
+                <select id="order-time" required class="w-full p-2 border rounded">
+                    <option value="">Selecciona una hora</option>
+                </select>
+            </div>
+            <div class="payment-detail">
+                <label for="order-barber">Barbero</label>
+                <select id="order-barber" required class="w-full p-2 border rounded">
+                    <option value="Jesús Vilca">Jesús Vilca</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="payment-detail">
+                <label for="order-payment">Método de Pago</label>
+                <select id="order-payment" required class="w-full p-2 border rounded">
+                    <option value="">Seleccione medio de pago</option>
+                    <option value="QR de Yape">QR de Yape</option>
+                    <option value="QR de Plin">QR de Plin</option>
+                </select>
+            </div>
+            <div id="payment-qr" class="hidden text-center">
+                <p id="qr-instruction" class="text-white mb-2"></p>
+                <img id="qr-image" src="" alt="QR Code" class="w-48 mx-auto">
+            </div>
+            <div class="form-actions flex justify-between">
+                <button type="button" id="details-back" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700">Volver</button>
+                <button type="submit" class="bg-yellow-400 text-black py-2 px-4 rounded hover:bg-yellow-500">Enviar Reserva</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="confirmation-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center">
+        <div id="modal-content" class="bg-gray-800 p-6 rounded-lg text-white max-w-md w-full max-h-[80vh] overflow-y-auto border border-yellow-600"></div>
+        <div class="modal-buttons mt-4 flex justify-between">
+            <button id="modal-cancel" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700">Cancelar</button>
+            <button id="modal-confirm" class="bg-yellow-400 text-black py-2 px-4 rounded hover:bg-yellow-500">Confirmar</button>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,564 @@
+// === Configuración editable para personalizar el negocio ===
+const BUSINESS_CONFIG = {
+    businessName: "Barbería Jesús Vilca", // Nombre del negocio
+    phoneNumber: "+51974820648", // Número de WhatsApp y teléfono
+    mapCoordinates: [-4.5800212, -81.2728562], // Coordenadas del mapa [latitud, longitud]
+    mapZoom: 15, // Nivel de zoom del mapa
+    mapAddress: "Mariscal Castilla D-12", // Dirección fija del negocio
+    socialLinks: {
+        tiktok: "https://tiktok.com/@barberiajesusvilca",
+        instagram: "https://instagram.com/barberiajesusvilca",
+        facebook: "https://facebook.com/barberiajesusvilca"
+    },
+    paymentQrImages: {
+        yape: "yape-qr.jpg", // Imagen QR para Yape
+        plin: "plin-qr.jpg"  // Imagen QR para Plin
+    },
+    paymentInstructions: {
+        yape: "Escanea el QR de Yape y realiza el pago del depósito.",
+        plin: "Escanea el QR de Plin y realiza el pago del depósito."
+    },
+    // Horarios del negocio (personalizables)
+    schedules: {
+        monday: [{ start: "09:00", end: "22:00" }], // Lunes: 9 AM - 10 PM
+        tuesday: [{ start: "09:00", end: "22:00" }], // Martes: 9 AM - 10 PM
+        wednesday: [{ start: "09:00", end: "22:00" }], // Miércoles: 9 AM - 10 PM
+        thursday: [{ start: "09:00", end: "22:00" }], // Jueves: 9 AM - 10 PM
+        friday: [{ start: "09:00", end: "22:00" }], // Viernes: 9 AM - 10 PM
+        saturday: [{ start: "09:00", end: "22:00" }], // Sábado: 9 AM - 10 PM
+        sunday: [{ start: "09:00", end: "17:00" }]   // Domingo: 9 AM - 5 PM
+    },
+    timeInterval: 30 // Intervalo entre horas en minutos (editable)
+};
+// === Fin de la configuración editable ===
+
+// Carrito de compras (persistente)
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Cargar secciones dinámicamente
+function loadSection(section) {
+    fetch(`${section}.html`)
+        .then(response => {
+            if (!response.ok) throw new Error('No se pudo cargar la sección');
+            return response.text();
+        })
+        .then(data => {
+            document.getElementById('content').innerHTML = data;
+            if (section === 'servicios') initServicios();
+            if (section === 'carrito') initCarrito();
+            if (section === 'contacto') initContacto();
+            if (section === 'inicio') initInicio();
+            updateCartCount();
+            localStorage.setItem('currentSection', section);
+        })
+        .catch(error => {
+            console.error('Error al cargar la sección:', error);
+            document.getElementById('content').innerHTML = '<p>Error al cargar el contenido.</p>';
+        });
+}
+
+// Inicializar la página
+document.addEventListener('DOMContentLoaded', () => {
+    const lastSection = localStorage.getItem('currentSection') || 'inicio';
+    loadSection(lastSection);
+    updateCartCount();
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const section = btn.getAttribute('data-section');
+            loadSection(section);
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+});
+
+// Mostrar notificaciones
+function showNotification(title, message, action = null) {
+    const notification = document.createElement('div');
+    notification.classList.add('fixed', 'top-4', 'right-4', 'bg-gray-800', 'text-white', 'p-4', 'rounded-lg', 'shadow-lg', 'z-50');
+    notification.innerHTML = `
+        <h3 class="text-lg font-bold text-yellow-400">${title}</h3>
+        <p>${message}</p>
+        ${action ? `<button id="notification-action" class="mt-2 bg-yellow-400 text-black py-1 px-3 rounded-lg hover:bg-yellow-500">${action.text}</button>` : ''}
+    `;
+    document.body.appendChild(notification);
+    if (action) {
+        document.getElementById('notification-action').addEventListener('click', () => {
+            action.callback();
+            notification.remove();
+        });
+    }
+    setTimeout(() => notification.remove(), 5000);
+}
+
+// Animación del carrito
+function triggerCartJump() {
+    const cartIcon = document.getElementById('cart-icon');
+    if (cartIcon) {
+        cartIcon.classList.add('animate-bounce');
+        setTimeout(() => cartIcon.classList.remove('animate-bounce'), 300);
+    } else {
+        console.error('Cart icon not found');
+    }
+}
+
+// Actualizar contador del carrito
+function updateCartCount() {
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+        cartCount.classList.toggle('hidden', totalItems === 0);
+    } else {
+        console.error('Cart count element not found');
+    }
+}
+
+// Renderizar el carrito
+function renderCart() {
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const cartEmpty = document.getElementById('cart-empty');
+    const clearCartBtn = document.getElementById('clear-cart-btn');
+    const checkoutBtn = document.getElementById('checkout-btn');
+
+    if (!cartItems || !cartTotal || !cartEmpty || !clearCartBtn || !checkoutBtn) return;
+
+    if (cart.length === 0) {
+        cartItems.classList.add('hidden');
+        cartTotal.classList.add('hidden');
+        cartEmpty.classList.remove('hidden');
+        clearCartBtn.classList.add('hidden');
+        checkoutBtn.classList.add('hidden');
+    } else {
+        cartItems.classList.remove('hidden');
+        cartTotal.classList.remove('hidden');
+        cartEmpty.classList.add('hidden');
+        clearCartBtn.classList.remove('hidden');
+        checkoutBtn.classList.remove('hidden');
+
+        cartItems.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.classList.add('flex', 'items-center', 'justify-between', 'p-4', 'bg-gray-700', 'rounded-lg', 'mb-2', 'border-b', 'border-yellow-600');
+            li.innerHTML = `
+                <div class="flex items-center">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4">
+                    <div>
+                        <h4 class="text-white font-semibold">${item.name}</h4>
+                        <p class="text-yellow-400 font-bold">S/ ${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                </div>
+                <button class="remove-btn text-white hover:text-yellow-400 transition-colors" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            cartItems.appendChild(li);
+            total += item.price * item.quantity;
+        });
+
+        cartTotal.textContent = `Total: S/ ${total.toFixed(2)}`;
+    }
+    updateCartCount();
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Generar opciones de horas según el día seleccionado (Perú UTC-5)
+function generateTimeOptions(date) {
+    const timeSelect = document.getElementById('order-time');
+    if (!timeSelect) return;
+
+    timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Resetear opciones
+
+    const selectedDate = new Date(date + 'T00:00:00-05:00'); // Forzar UTC-5 (Perú)
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const selectedDay = dayNames[selectedDate.getDay()];
+    const daySchedule = BUSINESS_CONFIG.schedules[selectedDay] || [];
+
+    if (daySchedule.length === 0) {
+        timeSelect.innerHTML = '<option value="">Día no disponible</option>';
+        return;
+    }
+
+    daySchedule.forEach(shift => {
+        let startTime = parseTime(shift.start);
+        const endTime = parseTime(shift.end);
+
+        while (startTime < endTime) {
+            const timeString = formatTime(startTime);
+            const option = document.createElement('option');
+            option.value = timeString;
+            option.textContent = timeString;
+            timeSelect.appendChild(option);
+            startTime.setMinutes(startTime.getMinutes() + BUSINESS_CONFIG.timeInterval);
+        }
+    });
+}
+
+// Convertir string "HH:MM" a objeto Date
+function parseTime(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const time = new Date();
+    time.setHours(hours, minutes, 0, 0);
+    return time;
+}
+
+// Formatear Date a "HH:MM"
+function formatTime(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+// Inicializar el carrito
+function initCarrito() {
+    renderCart();
+
+    const cartItems = document.getElementById('cart-items');
+    if (cartItems) {
+        cartItems.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn') || e.target.parentElement.classList.contains('remove-btn')) {
+                const index = e.target.closest('.remove-btn').getAttribute('data-index');
+                cart.splice(index, 1);
+                renderCart();
+            }
+        });
+    }
+
+    const clearCartBtn = document.getElementById('clear-cart-btn');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => {
+            cart = [];
+            renderCart();
+            showNotification('Carrito vacío', 'Todos los servicios han sido eliminados.');
+        });
+    }
+
+    const goToServicesBtn = document.getElementById('go-to-services');
+    if (goToServicesBtn) {
+        goToServicesBtn.addEventListener('click', () => loadSection('servicios'));
+    }
+
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const detailsStep = document.getElementById('step-details');
+    const itemsStep = document.getElementById('step-items');
+    const detailsBack = document.getElementById('details-back');
+    const orderForm = document.getElementById('order-form');
+    const paymentSelect = document.getElementById('order-payment');
+    const qrImage = document.getElementById('qr-image');
+    const qrInstruction = document.getElementById('qr-instruction');
+    const paymentQr = document.getElementById('payment-qr');
+    const confirmationModal = document.getElementById('confirmation-modal');
+    const modalContent = document.getElementById('modal-content');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalConfirm = document.getElementById('modal-confirm');
+    const dateInput = document.getElementById('order-date');
+
+    if (checkoutBtn && detailsStep && itemsStep && detailsBack && orderForm) {
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                showNotification('Carrito vacío', 'Añade al menos un servicio para continuar.');
+                return;
+            }
+            itemsStep.classList.add('hidden');
+            detailsStep.classList.remove('hidden');
+        });
+
+        detailsBack.addEventListener('click', () => {
+            detailsStep.classList.add('hidden');
+            itemsStep.classList.remove('hidden');
+            if (paymentQr) paymentQr.classList.add('hidden');
+        });
+
+        if (paymentSelect && paymentQr && qrImage && qrInstruction) {
+            paymentSelect.addEventListener('change', () => {
+                const payment = paymentSelect.value;
+                if (payment === "QR de Yape" || payment === "QR de Plin") {
+                    const paymentKey = payment === "QR de Yape" ? "yape" : "plin";
+                    paymentQr.classList.remove('hidden');
+                    qrImage.src = BUSINESS_CONFIG.paymentQrImages[paymentKey];
+                    qrInstruction.textContent = BUSINESS_CONFIG.paymentInstructions[paymentKey];
+                } else {
+                    paymentQr.classList.add('hidden');
+                }
+            });
+        }
+
+        // Configurar el campo de fecha con fecha mínima de hoy (Perú)
+        if (dateInput) {
+            const today = new Date().toLocaleDateString('es-PE', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
+            dateInput.setAttribute('min', today);
+            dateInput.addEventListener('change', (e) => {
+                generateTimeOptions(e.target.value);
+            });
+        }
+
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('order-name').value;
+            const date = document.getElementById('order-date').value;
+            const time = document.getElementById('order-time').value;
+            const barber = document.getElementById('order-barber').value;
+            const payment = document.getElementById('order-payment').value;
+
+            if (!time) {
+                showNotification('Hora inválida', 'Por favor selecciona una hora válida.');
+                return;
+            }
+
+            if (payment === "") {
+                showNotification('Método de pago inválido', 'Por favor selecciona un medio de pago.');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const deposit = (total * 0.5).toFixed(2);
+
+            let modalText = `
+                <p><strong>Cliente:</strong> ${name}</p>
+                <p><strong>Fecha:</strong> ${date}</p>
+                <p><strong>Hora:</strong> ${time}</p>
+                <p><strong>Barbero:</strong> ${barber}</p>
+                <p><strong>Servicios:</strong></p>
+                <ul class="list-disc list-inside">
+                    ${cart.map(item => `<li>${item.name}: S/ ${item.price.toFixed(2)}</li>`).join('')}
+                </ul>
+                <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
+                <p><strong>Depósito (50%):</strong> S/ ${deposit}</p>
+                <p><strong>Método de pago:</strong> ${payment}</p>
+            `;
+            if (modalContent) modalContent.innerHTML = modalText;
+            if (confirmationModal) {
+                confirmationModal.classList.remove('hidden');
+                confirmationModal.classList.add('flex');
+            }
+
+            if (modalCancel) {
+                modalCancel.addEventListener('click', () => {
+                    confirmationModal.classList.add('hidden');
+                    confirmationModal.classList.remove('flex');
+                }, { once: true });
+            }
+
+            if (modalConfirm) {
+                modalConfirm.addEventListener('click', () => {
+                    let message = `💈 *Nueva Cita - ${BUSINESS_CONFIG.businessName}* 💈\n\n`;
+                    message += `👤 *Cliente:* ${name}\n`;
+                    message += `📅 *Fecha:* ${date}\n`;
+                    message += `⏰ *Hora:* ${time}\n`;
+                    message += `💇‍♂️ *Barbero:* ${barber}\n`;
+                    message += `📍 *Ubicación:* ${BUSINESS_CONFIG.mapAddress}\n`;
+                    message += `📋 *Servicios:*\n`;
+                    cart.forEach(item => {
+                        message += `- ${item.name}: S/ ${item.price.toFixed(2)}\n`;
+                    });
+                    message += `\n💵 *Total:* S/ ${total.toFixed(2)}\n`;
+                    message += `💰 *Depósito (50%):* S/ ${deposit}\n`;
+                    message += `💳 *Método de pago:* ${payment}\n`;
+                    message += `📲 *Instrucción:* ${payment === "QR de Yape" ? BUSINESS_CONFIG.paymentInstructions.yape : BUSINESS_CONFIG.paymentInstructions.plin} Envía el comprobante al WhatsApp.\n`;
+
+                    const whatsappUrl = `https://wa.me/${BUSINESS_CONFIG.phoneNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                    cart = [];
+                    renderCart();
+                    detailsStep.classList.add('hidden');
+                    itemsStep.classList.remove('hidden');
+                    if (paymentQr) paymentQr.classList.add('hidden');
+                    confirmationModal.classList.add('hidden');
+                    confirmationModal.classList.remove('flex');
+                    showNotification('Cita enviada', 'Tu reserva ha sido enviada por WhatsApp.');
+                }, { once: true });
+            }
+        });
+    }
+}
+
+// Inicializar servicios
+function initServicios() {
+    const categories = document.querySelectorAll('.category');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const allItemsContainer = document.querySelector('.category[data-category="todos"] .items');
+
+    if (allItemsContainer) {
+        const promoItems = document.querySelectorAll('.category[data-category="servicios"] .item');
+        promoItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
+        categories.forEach(category => {
+            if (category.getAttribute('data-category') !== 'todos' && category.getAttribute('data-category') !== 'promociones') {
+                const items = category.querySelectorAll('.item');
+                items.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
+            }
+        });
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const category = button.getAttribute('data-category');
+            tabButtons.forEach(btn => btn.classList.remove('bg-yellow-400', 'text-black'));
+            button.classList.add('bg-yellow-400', 'text-black');
+            categories.forEach(cat => {
+                cat.classList.add('hidden');
+                if (cat.getAttribute('data-category') === category) {
+                    cat.classList.remove('hidden');
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const item = button.closest('.item');
+            const name = button.getAttribute('data-name');
+            const price = parseFloat(button.getAttribute('data-price'));
+            const image = button.getAttribute('data-image');
+
+            const existingItem = cart.find(i => i.name === name);
+            if (existingItem) {
+                showNotification('Servicio ya añadido', `${name} ya está en tu carrito.`);
+                return;
+            }
+
+            cart.push({ name, price, image, quantity: 1 });
+            triggerCartJump();
+            updateCartCount();
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            if (name.includes('Corte')) {
+                showNotification(
+                    'Servicio añadido',
+                    `${name} se ha añadido al carrito. ¿Te gustaría agregar un afeitado por S/ 15.00?`,
+                    {
+                        text: 'Añadir afeitado',
+                        callback: () => {
+                            cart.push({ name: 'Afeitado', price: 15.00, image: 'afeitado1.jpg', quantity: 1 });
+                            triggerCartJump();
+                            updateCartCount();
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            showNotification('Afeitado añadido', 'Se añadió un afeitado al carrito.');
+                        }
+                    }
+                );
+            } else if (cart.length === 2) {
+                showNotification(
+                    'Oferta especial',
+                    'Has añadido 2 servicios. ¿Quieres el combo Corte + Afeitado por S/ 30.00?',
+                    {
+                        text: 'Aceptar promoción',
+                        callback: () => {
+                            cart = [{ name: 'Corte + Afeitado', price: 30.00, image: 'promo1.jpg', quantity: 1 }];
+                            triggerCartJump();
+                            updateCartCount();
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            showNotification('Promoción añadida', 'Se aplicó el combo Corte + Afeitado.');
+                        }
+                    }
+                );
+            } else {
+                showNotification('Servicio añadido', `${name} se ha añadido al carrito.`);
+            }
+        });
+    });
+
+    const modal = document.getElementById('service-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDescription = document.getElementById('modal-description');
+    const modalClose = document.getElementById('modal-close');
+
+    if (modal && modalTitle && modalDescription && modalClose) {
+        document.querySelectorAll('.view-details-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const name = button.getAttribute('data-name');
+                const description = button.getAttribute('data-description');
+
+                modalTitle.textContent = name;
+                modalDescription.textContent = description;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        });
+
+        modalClose.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        });
+    }
+}
+
+// Inicializar contacto
+function initContacto() {
+    const directionsBtn = document.getElementById('directions-btn');
+    const locationModal = document.getElementById('location-modal');
+    const visitBtn = document.getElementById('visit-btn');
+
+    if (directionsBtn && locationModal && visitBtn) {
+        directionsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            locationModal.style.display = 'flex'; // Mostrar modal
+        });
+
+        visitBtn.addEventListener('click', () => {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${encodeURIComponent(BUSINESS_CONFIG.mapAddress)}`;
+                    window.open(mapsUrl, '_blank');
+                    locationModal.style.display = 'none'; // Cerrar modal
+                },
+                (error) => {
+                    alert('No se pudo obtener tu ubicación. Asegúrate de que esté activada en tu navegador.');
+                    console.error('Error de geolocalización:', error);
+                }
+            );
+        });
+
+        // Cerrar modal al hacer clic fuera
+        locationModal.addEventListener('click', (e) => {
+            if (e.target === locationModal) {
+                locationModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('Elementos del modal no encontrados');
+    }
+
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.classList.remove('hidden');
+        const map = L.map('map').setView(BUSINESS_CONFIG.mapCoordinates, BUSINESS_CONFIG.mapZoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        L.marker(BUSINESS_CONFIG.mapCoordinates).addTo(map)
+            .bindPopup(BUSINESS_CONFIG.businessName)
+            .openPopup();
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+}
+
+// Inicializar inicio
+function initInicio() {
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    if (slides.length === 0) return;
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+    }
+
+    showSlide(currentSlide);
+    setTimeout(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }, 5000);
+}

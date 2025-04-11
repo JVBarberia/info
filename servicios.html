@@ -1,0 +1,146 @@
+<!-- Sección de título -->
+<section class="carta-title-section">
+    <h2 class="section-title">Nuestros Servicios</h2>
+</section>
+
+<!-- Pestañas de categorías -->
+<div class="category-tabs-section fixed top-16 left-0 w-full bg-gray-900 z-10 p-4 overflow-x-auto whitespace-nowrap shadow-lg">
+    <button class="tab-btn bg-gray-200 text-black px-4 py-2 rounded-lg mr-2 hover:bg-yellow-400 transition-colors active:bg-yellow-400 active:text-black" data-category="todos">Todos</button>
+    <button class="tab-btn bg-gray-200 text-black px-4 py-2 rounded-lg mr-2 hover:bg-yellow-400 transition-colors" data-category="cortes">Cortes</button>
+    <button class="tab-btn bg-gray-200 text-black px-4 py-2 rounded-lg mr-2 hover:bg-yellow-400 transition-colors" data-category="cuidado">Cuidado personal</button>
+    <button class="tab-btn bg-gray-200 text-black px-4 py-2 rounded-lg mr-2 hover:bg-yellow-400 transition-colors" data-category="promociones">Promociones</button>
+</div>
+
+<!-- Contenido de los servicios -->
+<section class="carta-section">
+    <!-- Todos -->
+    <div class="category" data-category="todos">
+        <h3 class="category-title">Todos los Servicios</h3>
+        <div class="items flex flex-col gap-3">
+            <!-- Los ítems se llenarán dinámicamente con JS, priorizando Promociones -->
+        </div>
+    </div>
+
+    <!-- Cortes -->
+    <div class="category hidden" data-category="cortes">
+        <h3 class="category-title">Cortes</h3>
+        <div class="items flex flex-col gap-3">
+            <div class="item" data-id="corte-clasico">
+                <img src="assets/img/servicios/clasico.jpg" alt="Corte Clásico" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Corte Clásico</h4>
+                    <p class="price">S/ 20.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Corte Clásico" data-description="Un corte atemporal con patillas cuadradas o en punta, adaptado a tu estilo. Elige peinados clásicos como raya al lado o cortes uniformes (1.5, 2, 3, 4, 5, 7, etc.). Realizado con tijera o máquina para un acabado impecable."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Corte Clásico" data-price="20.00" data-image="assets/img/servicios/corte_clasico.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+            <div class="item" data-id="corte-degradado">
+                <img src="assets/img/servicios/degradado.jpg" alt="Cortes Degradados" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Cortes Degradados</h4>
+                    <p class="price">S/ 25.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Cortes Degradados" data-description="Sigue las últimas tendencias con un degradado moderno y sin patillas. Perfecto para un look fresco y actual. Ofrecemos estilos como Low Fade, Mid Fade, Skin Fade y más, personalizados según tu preferencia."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Cortes Degradados" data-price="25.00" data-image="assets/img/servicios/corte_degradado.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cuidado Personal -->
+    <div class="category hidden" data-category="cuidado">
+        <h3 class="category-title">Cuidado Personal</h3>
+        <div class="items flex flex-col gap-3">
+            <div class="item" data-id="barba">
+                <img src="assets/img/servicios/barba.jpg" alt="Barba" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Barba</h4>
+                    <p class="price">S/ 15.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Barba" data-description="Dale a tu barba el cuidado que merece. Reducimos el volumen a tu gusto y delineamos según la forma de tu rostro, logrando un estilo definido y masculino que resalta tu personalidad."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Barba" data-price="15.00" data-image="assets/img/servicios/barba.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+            <div class="item" data-id="cejas">
+                <img src="assets/img/servicios/cejas.jpg" alt="Cejas" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Cejas</h4>
+                    <p class="price">S/ 5.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Cejas" data-description="Limpieza precisa para unas cejas perfectas. Retiramos exceso de vello en el centro, delineamos arriba y abajo para un acabado limpio que realza tu mirada con un toque varonil."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Cejas" data-price="5.00" data-image="assets/img/servicios/cejas.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+            <div class="item" data-id="limpieza-facial">
+                <img src="assets/img/servicios/limpieza_facial.jpg" alt="Limpieza Facial" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Limpieza Facial</h4>
+                    <p class="price">S/ 30.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Limpieza Facial" data-description="Revitaliza tu piel con una exfoliación que elimina impurezas y abre poros, seguida de una hidratación profunda. Incluye mascarilla para puntos negros y una mascarilla calmante para un rostro fresco y renovado."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Limpieza Facial" data-price="30.00" data-image="assets/img/servicios/limpieza_facial.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promociones -->
+    <div class="category hidden" data-category="promociones">
+        <h3 class="category-title">Promociones</h3>
+        <div class="items flex flex-col gap-3">
+            <div class="item promo-item" data-id="corte-barba">
+                <span class="promo-badge">¡Oferta!</span>
+                <img src="assets/img/servicios/corte_barba.jpg" alt="Corte + Barba" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Corte + Barba</h4>
+                    <p class="price">S/ 30.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Corte + Barba" data-description="Combina un corte clásico o degradado con un arreglo de barba para un look completo a un precio especial. Perfecto para quienes buscan estilo y ahorro."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Corte + Barba" data-price="30.00" data-image="assets/img/servicios/corte_barba.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+            <div class="item promo-item" data-id="corte-barba-ceja">
+                <span class="promo-badge">¡Oferta!</span>
+                <img src="assets/img/servicios/corte_barba_cejas.jpg" alt="Corte + Barba + Ceja" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Corte + Barba + Ceja</h4>
+                    <p class="price">S/ 35.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Corte + Barba + Ceja" data-description="El paquete ideal para un cambio total. Incluye un corte a tu elección, arreglo de barba personalizado y limpieza de cejas para un acabado pulido y profesional."><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Corte + Barba + Ceja" data-price="35.00" data-image="assets/img/servicios/corte_barba_ceja.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+            <div class="item promo-item" data-id="servicio-vip">
+                <span class="promo-badge">¡Exclusivo!</span>
+                <img src="assets/img/servicios/vip.jpg" alt="Servicio VIP" class="item-image">
+                <div class="item-info flex justify-between items-center">
+                    <h4>Servicio VIP</h4>
+                    <p class="price">S/ 50.00</p>
+                </div>
+                <div class="item-actions flex gap-2">
+                    <button class="view-details-btn" data-name="Servicio VIP" data-description="La experiencia completa: corte, barba, cejas y limpieza facial, todo en una sola sesión. Además, disfruta de una bebida refrescante y un relajante masaje con máquina. ¡Lujo y cuidado en un solo paquete!"><i class="fas fa-eye"></i></button>
+                    <button class="add-to-cart-btn" data-name="Servicio VIP" data-price="50.00" data-image="assets/img/servicios/servicio_vip.jpg"><i class="fas fa-calendar-check"></i> Reservar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para detalles -->
+<div id="service-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-title"></h3>
+        <p id="modal-description"></p>
+        <div class="modal-buttons">
+            <button id="modal-close">Cerrar</button>
+        </div>
+    </div>
+</div>

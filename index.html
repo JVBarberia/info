@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería Jesús Vilca</title>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tu styles.css personalizado (si lo sigues usando como complemento) -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <!-- Barra superior con el logo -->
+    <header class="bg-gray-800 text-black fixed top-0 w-full z-10 p-4 shadow-lg">
+        <div class="flex justify-center items-center">
+            <img src="assets/img/logo.png" alt="Barbería Jesús Vilca" class="w-48 h-9 object-contain">
+        </div>
+    </header>
+
+    <!-- Contenido dinámico -->
+    <main id="content" class="flex-1 mt-16 mb-16 overflow-y-auto">
+        <!-- Las secciones (inicio.html, servicios.html, etc.) se cargan aquí -->
+    </main>
+
+    <!-- Barra inferior de navegación -->
+    <nav class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white fixed bottom-0 w-full z-10 flex justify-around py-2 shadow-lg">
+        <button class="nav-btn flex flex-col items-center text-black hover:text-yellow-200 transition-colors" data-section="inicio">
+            <i class="fas fa-home text-lg"></i>
+            <span class="text-sm">Inicio</span>
+        </button>
+        <button class="nav-btn flex flex-col items-center text-black hover:text-yellow-200 transition-colors" data-section="servicios">
+            <i class="fas fa-scissors text-lg"></i>
+            <span class="text-sm">Servicios</span>
+        </button>
+        <button class="nav-btn flex flex-col items-center text-black hover:text-yellow-200 transition-colors relative" data-section="carrito">
+            <i class="fas fa-shopping-cart text-lg" id="cart-icon"></i>
+            <span class="text-sm">Carrito</span>
+            <span id="cart-count" class="bg-yellow-300 text-black rounded-full w-5 h-5 flex items-center justify-center text-xs absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 hidden">0</span>
+        </button>
+        <button class="nav-btn flex flex-col items-center text-black hover:text-yellow-200 transition-colors" data-section="contacto">
+            <i class="fa-solid fa-location-dot text-lg"></i>
+            <span class="text-sm">Local</span>
+        </button>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
