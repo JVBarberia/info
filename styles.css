@@ -801,6 +801,7 @@ nav.bottom-nav {
     width: 100%;
     padding: 0.75rem;
     border: 2px solid var(--gris-elegante);
+    color:var(--texto-negro);
     border-radius: 8px;
     font-size: 1rem;
     background-color: var(--gris-claro);

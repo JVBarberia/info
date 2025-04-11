@@ -1,45 +1,44 @@
 // === Configuración editable para personalizar el negocio ===
 const BUSINESS_CONFIG = {
-    businessName: "Barbería Jesús Vilca", // Nombre del negocio
-    phoneNumber: "+51974820648", // Número de WhatsApp y teléfono
-    mapCoordinates: [-4.5800212, -81.2728562], // Coordenadas del mapa [latitud, longitud]
-    mapZoom: 15, // Nivel de zoom del mapa
-    mapAddress: "Mariscal Castilla D-12", // Dirección fija del negocio
+    businessName: "Barbería Jesús Vilca",
+    phoneNumber: "+51974820648",
+    mapCoordinates: [-4.5800212, -81.2728562],
+    mapZoom: 15,
+    mapAddress: "Mariscal Castilla D-12",
     socialLinks: {
         tiktok: "https://tiktok.com/@barberiajesusvilca",
         instagram: "https://instagram.com/barberiajesusvilca",
         facebook: "https://facebook.com/barberiajesusvilca"
     },
     paymentQrImages: {
-        yape: "yape-qr.jpg", // Imagen QR para Yape
-        plin: "plin-qr.jpg"  // Imagen QR para Plin
+        yape: "assets/img/qr/yape-qr.png",
+        plin: "assets/img/qr/plin-qr.png"
     },
     paymentInstructions: {
         yape: "Escanea el QR de Yape y realiza el pago del depósito.",
-        plin: "Escanea el QR de Plin y realiza el pago del depósito."
+        //plin: "Escanea el QR de Plin y realiza el pago del depósito."
     },
-    // Horarios del negocio (personalizables)
     schedules: {
-        monday: [{ start: "09:00", end: "22:00" }], // Lunes: 9 AM - 10 PM
-        tuesday: [{ start: "09:00", end: "22:00" }], // Martes: 9 AM - 10 PM
-        wednesday: [{ start: "09:00", end: "22:00" }], // Miércoles: 9 AM - 10 PM
-        thursday: [{ start: "09:00", end: "22:00" }], // Jueves: 9 AM - 10 PM
-        friday: [{ start: "09:00", end: "22:00" }], // Viernes: 9 AM - 10 PM
-        saturday: [{ start: "09:00", end: "22:00" }], // Sábado: 9 AM - 10 PM
-        sunday: [{ start: "09:00", end: "17:00" }]   // Domingo: 9 AM - 5 PM
+        monday: [{ start: "09:00", end: "22:00" }],
+        tuesday: [{ start: "09:00", end: "22:00" }],
+        wednesday: [{ start: "09:00", end: "22:00" }],
+        thursday: [{ start: "09:00", end: "22:00" }],
+        friday: [{ start: "09:00", end: "22:00" }],
+        saturday: [{ start: "09:00", end: "22:00" }],
+        sunday: [{ start: "09:00", end: "17:00" }]
     },
-    timeInterval: 30 // Intervalo entre horas en minutos (editable)
+    timeInterval: 30,
+    servicesImagePath: "assets/img/servicios/",
+    placeholderImage: "assets/img/placeholder.jpg"
 };
 // === Fin de la configuración editable ===
 
-// Carrito de compras (persistente)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// Cargar secciones dinámicamente
 function loadSection(section) {
     fetch(`${section}.html`)
         .then(response => {
-            if (!response.ok) throw new Error('No se pudo cargar la sección');
+            if (!response.ok) throw new Error(`No se pudo cargar ${section}.html`);
             return response.text();
         })
         .then(data => {
@@ -53,11 +52,10 @@ function loadSection(section) {
         })
         .catch(error => {
             console.error('Error al cargar la sección:', error);
-            document.getElementById('content').innerHTML = '<p>Error al cargar el contenido.</p>';
+            document.getElementById('content').innerHTML = '<p>Error al cargar el contenido. Revisa la consola para más detalles.</p>';
         });
 }
 
-// Inicializar la página
 document.addEventListener('DOMContentLoaded', () => {
     const lastSection = localStorage.getItem('currentSection') || 'inicio';
     loadSection(lastSection);
@@ -72,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Mostrar notificaciones
 function showNotification(title, message, action = null) {
     const notification = document.createElement('div');
     notification.classList.add('fixed', 'top-4', 'right-4', 'bg-gray-800', 'text-white', 'p-4', 'rounded-lg', 'shadow-lg', 'z-50');
@@ -91,30 +88,23 @@ function showNotification(title, message, action = null) {
     setTimeout(() => notification.remove(), 5000);
 }
 
-// Animación del carrito
 function triggerCartJump() {
     const cartIcon = document.getElementById('cart-icon');
     if (cartIcon) {
         cartIcon.classList.add('animate-bounce');
         setTimeout(() => cartIcon.classList.remove('animate-bounce'), 300);
-    } else {
-        console.error('Cart icon not found');
     }
 }
 
-// Actualizar contador del carrito
 function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if (cartCount) {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         cartCount.textContent = totalItems;
         cartCount.classList.toggle('hidden', totalItems === 0);
-    } else {
-        console.error('Cart count element not found');
     }
 }
 
-// Renderizar el carrito
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     const cartTotal = document.getElementById('cart-total');
@@ -143,9 +133,11 @@ function renderCart() {
         cart.forEach((item, index) => {
             const li = document.createElement('li');
             li.classList.add('flex', 'items-center', 'justify-between', 'p-4', 'bg-gray-700', 'rounded-lg', 'mb-2', 'border-b', 'border-yellow-600');
+            const imageSrc = item.image && item.image.trim() !== "" ? item.image : BUSINESS_CONFIG.placeholderImage;
+            console.log(`Renderizando imagen para ${item.name}: ${imageSrc}`);
             li.innerHTML = `
                 <div class="flex items-center">
-                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4">
+                    <img src="${imageSrc}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4" onerror="this.src='${BUSINESS_CONFIG.placeholderImage}'">
                     <div>
                         <h4 class="text-white font-semibold">${item.name}</h4>
                         <p class="text-yellow-400 font-bold">S/ ${(item.price * item.quantity).toFixed(2)}</p>
@@ -165,14 +157,12 @@ function renderCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-// Generar opciones de horas según el día seleccionado (Perú UTC-5)
 function generateTimeOptions(date) {
     const timeSelect = document.getElementById('order-time');
     if (!timeSelect) return;
 
-    timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Resetear opciones
-
-    const selectedDate = new Date(date + 'T00:00:00-05:00'); // Forzar UTC-5 (Perú)
+    timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
+    const selectedDate = new Date(date + 'T00:00:00-05:00');
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const selectedDay = dayNames[selectedDate.getDay()];
     const daySchedule = BUSINESS_CONFIG.schedules[selectedDay] || [];
@@ -197,7 +187,6 @@ function generateTimeOptions(date) {
     });
 }
 
-// Convertir string "HH:MM" a objeto Date
 function parseTime(timeStr) {
     const [hours, minutes] = timeStr.split(':').map(Number);
     const time = new Date();
@@ -205,14 +194,12 @@ function parseTime(timeStr) {
     return time;
 }
 
-// Formatear Date a "HH:MM"
 function formatTime(date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
-// Inicializar el carrito
 function initCarrito() {
     renderCart();
 
@@ -286,7 +273,6 @@ function initCarrito() {
             });
         }
 
-        // Configurar el campo de fecha con fecha mínima de hoy (Perú)
         if (dateInput) {
             const today = new Date().toLocaleDateString('es-PE', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
             dateInput.setAttribute('min', today);
@@ -375,21 +361,16 @@ function initCarrito() {
     }
 }
 
-// Inicializar servicios
 function initServicios() {
     const categories = document.querySelectorAll('.category');
     const tabButtons = document.querySelectorAll('.tab-btn');
     const allItemsContainer = document.querySelector('.category[data-category="todos"] .items');
 
     if (allItemsContainer) {
-        const promoItems = document.querySelectorAll('.category[data-category="servicios"] .item');
+        const promoItems = document.querySelectorAll('.category[data-category="promociones"] .item');
         promoItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
-        categories.forEach(category => {
-            if (category.getAttribute('data-category') !== 'todos' && category.getAttribute('data-category') !== 'promociones') {
-                const items = category.querySelectorAll('.item');
-                items.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
-            }
-        });
+        const otherItems = document.querySelectorAll('.category[data-category="cortes"] .item, .category[data-category="cuidado"] .item');
+        otherItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
     }
 
     tabButtons.forEach(button => {
@@ -411,7 +392,8 @@ function initServicios() {
             const item = button.closest('.item');
             const name = button.getAttribute('data-name');
             const price = parseFloat(button.getAttribute('data-price'));
-            const image = button.getAttribute('data-image');
+            const image = button.getAttribute('data-image') || BUSINESS_CONFIG.placeholderImage;
+            console.log(`Añadiendo al carrito: ${name} con imagen ${image}`);
 
             const existingItem = cart.find(i => i.name === name);
             if (existingItem) {
@@ -431,7 +413,7 @@ function initServicios() {
                     {
                         text: 'Añadir afeitado',
                         callback: () => {
-                            cart.push({ name: 'Afeitado', price: 15.00, image: 'afeitado1.jpg', quantity: 1 });
+                            cart.push({ name: 'Afeitado', price: 15.00, image: `${BUSINESS_CONFIG.servicesImagePath}afeitado1.jpg`, quantity: 1 });
                             triggerCartJump();
                             updateCartCount();
                             localStorage.setItem('cart', JSON.stringify(cart));
@@ -446,7 +428,7 @@ function initServicios() {
                     {
                         text: 'Aceptar promoción',
                         callback: () => {
-                            cart = [{ name: 'Corte + Afeitado', price: 30.00, image: 'promo1.jpg', quantity: 1 }];
+                            cart = [{ name: 'Corte + Afeitado', price: 30.00, image: `${BUSINESS_CONFIG.servicesImagePath}promo1.jpg`, quantity: 1 }];
                             triggerCartJump();
                             updateCartCount();
                             localStorage.setItem('cart', JSON.stringify(cart));
@@ -492,7 +474,6 @@ function initServicios() {
     }
 }
 
-// Inicializar contacto
 function initContacto() {
     const directionsBtn = document.getElementById('directions-btn');
     const locationModal = document.getElementById('location-modal');
@@ -501,7 +482,7 @@ function initContacto() {
     if (directionsBtn && locationModal && visitBtn) {
         directionsBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            locationModal.style.display = 'flex'; // Mostrar modal
+            locationModal.style.display = 'flex';
         });
 
         visitBtn.addEventListener('click', () => {
@@ -510,7 +491,7 @@ function initContacto() {
                     const { latitude, longitude } = position.coords;
                     const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${encodeURIComponent(BUSINESS_CONFIG.mapAddress)}`;
                     window.open(mapsUrl, '_blank');
-                    locationModal.style.display = 'none'; // Cerrar modal
+                    locationModal.style.display = 'none';
                 },
                 (error) => {
                     alert('No se pudo obtener tu ubicación. Asegúrate de que esté activada en tu navegador.');
@@ -519,14 +500,11 @@ function initContacto() {
             );
         });
 
-        // Cerrar modal al hacer clic fuera
         locationModal.addEventListener('click', (e) => {
             if (e.target === locationModal) {
                 locationModal.style.display = 'none';
             }
         });
-    } else {
-        console.error('Elementos del modal no encontrados');
     }
 
     const mapContainer = document.getElementById('map');
@@ -543,7 +521,6 @@ function initContacto() {
     }
 }
 
-// Inicializar inicio
 function initInicio() {
     const slides = document.querySelectorAll('.slide');
     let currentSlide = 0;
