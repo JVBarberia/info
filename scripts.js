@@ -72,27 +72,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showNotification(title, message, action = null) {
     const notification = document.createElement('div');
-    notification.classList.add('fixed', 'top-4', 'right-4', 'bg-gray-800', 'text-white', 'p-4', 'rounded-lg', 'shadow-lg', 'z-50');
+    notification.classList.add('notification-modal-content');
     notification.innerHTML = `
-        <h3 class="text-lg font-bold text-yellow-400">${title}</h3>
+        <h3>${title}</h3>
         <p>${message}</p>
-        ${action ? `<button id="notification-action" class="mt-2 bg-yellow-400 text-black py-1 px-3 rounded-lg hover:bg-yellow-500">${action.text}</button>` : ''}
+        ${action ? `<button id="notification-action">${action.text}</button>` : ''}
     `;
-    document.body.appendChild(notification);
+    const modal = document.createElement('div');
+    modal.classList.add('notification-modal', 'flex');
+    modal.appendChild(notification);
+    document.body.appendChild(modal);
     if (action) {
         document.getElementById('notification-action').addEventListener('click', () => {
             action.callback();
-            notification.remove();
+            modal.remove();
         });
     }
-    setTimeout(() => notification.remove(), 5000);
+    setTimeout(() => modal.remove(), 5000);
 }
 
 function triggerCartJump() {
     const cartIcon = document.getElementById('cart-icon');
     if (cartIcon) {
-        cartIcon.classList.add('animate-bounce');
-        setTimeout(() => cartIcon.classList.remove('animate-bounce'), 300);
+        cartIcon.classList.add('cart-jump');
+        setTimeout(() => cartIcon.classList.remove('cart-jump'), 300);
     }
 }
 
@@ -132,20 +135,19 @@ function renderCart() {
 
         cart.forEach((item, index) => {
             const li = document.createElement('li');
-            li.classList.add('flex', 'items-center', 'justify-between', 'p-4', 'bg-gray-700', 'rounded-lg', 'mb-2', 'border-b', 'border-yellow-600');
+            li.classList.add('cart-item');
             const imageSrc = item.image && item.image.trim() !== "" ? item.image : BUSINESS_CONFIG.placeholderImage;
-            console.log(`Renderizando imagen para ${item.name}: ${imageSrc}`);
             li.innerHTML = `
-                <div class="flex items-center">
-                    <img src="${imageSrc}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4" onerror="this.src='${BUSINESS_CONFIG.placeholderImage}'">
-                    <div>
-                        <h4 class="text-white font-semibold">${item.name}</h4>
-                        <p class="text-yellow-400 font-bold">S/ ${(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
+                <img src="${imageSrc}" alt="${item.name}" class="cart-item-image" onerror="this.src='${BUSINESS_CONFIG.placeholderImage}'">
+                <div class="cart-item-info">
+                    <h4>${item.name}</h4>
+                    <p>S/ ${(item.price * item.quantity).toFixed(2)}</p>
                 </div>
-                <button class="remove-btn text-white hover:text-yellow-400 transition-colors" data-index="${index}">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div class="cart-item-actions">
+                    <button class="remove-btn" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             `;
             cartItems.appendChild(li);
             total += item.price * item.quantity;
@@ -203,6 +205,12 @@ function formatTime(date) {
 function initCarrito() {
     renderCart();
 
+    const confirmationModal = document.getElementById('confirmation-modal');
+    if (confirmationModal) {
+        confirmationModal.classList.add('hidden');
+        confirmationModal.classList.remove('flex');
+    }
+
     const cartItems = document.getElementById('cart-items');
     if (cartItems) {
         cartItems.addEventListener('click', (e) => {
@@ -237,8 +245,7 @@ function initCarrito() {
     const qrImage = document.getElementById('qr-image');
     const qrInstruction = document.getElementById('qr-instruction');
     const paymentQr = document.getElementById('payment-qr');
-    const confirmationModal = document.getElementById('confirmation-modal');
-    const modalContent = document.getElementById('modal-content');
+    const modalMessage = document.getElementById('modal-message');
     const modalCancel = document.getElementById('modal-cancel');
     const modalConfirm = document.getElementById('modal-confirm');
     const dateInput = document.getElementById('order-date');
@@ -316,21 +323,27 @@ function initCarrito() {
                     <p class="text-sm text-gray-300">Por favor, realiza el pago completo para confirmar tu reserva.</p>
                 </div>
             `;
-            if (modalContent) modalContent.innerHTML = modalText;
+            if (modalMessage) {
+                modalMessage.innerHTML = modalText;
+            } else {
+                console.error('Elemento #modal-message no encontrado');
+            }
             if (confirmationModal) {
                 confirmationModal.classList.remove('hidden');
                 confirmationModal.classList.add('flex');
             }
 
             if (modalCancel) {
-                modalCancel.addEventListener('click', () => {
+                modalCancel.onclick = () => {
                     confirmationModal.classList.add('hidden');
                     confirmationModal.classList.remove('flex');
-                }, { once: true });
+                };
+            } else {
+                console.error('Botón #modal-cancel no encontrado');
             }
 
             if (modalConfirm) {
-                modalConfirm.addEventListener('click', () => {
+                modalConfirm.onclick = () => {
                     let message = `💈 *${BUSINESS_CONFIG.businessName} - Nueva Reserva* 💈\n\n`;
                     message += `👤 *Cliente:* ${name}\n`;
                     message += `📅 *Fecha:* ${date}\n`;
@@ -355,7 +368,9 @@ function initCarrito() {
                     confirmationModal.classList.add('hidden');
                     confirmationModal.classList.remove('flex');
                     showNotification('Reserva enviada', 'Tu reserva ha sido enviada por WhatsApp. ¡Gracias por elegirnos!');
-                }, { once: true });
+                };
+            } else {
+                console.error('Botón #modal-confirm no encontrado');
             }
         });
     }
@@ -376,8 +391,8 @@ function initServicios() {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const category = button.getAttribute('data-category');
-            tabButtons.forEach(btn => btn.classList.remove('bg-yellow-400', 'text-black'));
-            button.classList.add('bg-yellow-400', 'text-black');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
             categories.forEach(cat => {
                 cat.classList.add('hidden');
                 if (cat.getAttribute('data-category') === category) {
@@ -393,7 +408,6 @@ function initServicios() {
             const name = button.getAttribute('data-name');
             const price = parseFloat(button.getAttribute('data-price'));
             const image = button.getAttribute('data-image') || BUSINESS_CONFIG.placeholderImage;
-            console.log(`Añadiendo al carrito: ${name} con imagen ${image}`);
 
             const existingItem = cart.find(i => i.name === name);
             if (existingItem) {
@@ -482,27 +496,22 @@ function initContacto() {
     if (directionsBtn && locationModal && visitBtn) {
         directionsBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            locationModal.style.display = 'flex';
+            locationModal.classList.remove('hidden');
+            locationModal.classList.add('flex');
         });
 
         visitBtn.addEventListener('click', () => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${encodeURIComponent(BUSINESS_CONFIG.mapAddress)}`;
-                    window.open(mapsUrl, '_blank');
-                    locationModal.style.display = 'none';
-                },
-                (error) => {
-                    alert('No se pudo obtener tu ubicación. Asegúrate de que esté activada en tu navegador.');
-                    console.error('Error de geolocalización:', error);
-                }
-            );
+            // Abrir Google Maps directamente con la dirección del negocio
+            const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BUSINESS_CONFIG.mapAddress)}`;
+            window.open(mapsUrl, '_blank');
+            locationModal.classList.add('hidden');
+            locationModal.classList.remove('flex');
         });
 
         locationModal.addEventListener('click', (e) => {
             if (e.target === locationModal) {
-                locationModal.style.display = 'none';
+                locationModal.classList.add('hidden');
+                locationModal.classList.remove('flex');
             }
         });
     }
@@ -534,7 +543,7 @@ function initInicio() {
     }
 
     showSlide(currentSlide);
-    setTimeout(() => {
+    setInterval(() => {
         currentSlide = (currentSlide + 1) % slides.length;
         showSlide(currentSlide);
     }, 5000);
