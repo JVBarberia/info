@@ -222,7 +222,7 @@ nav.bottom-nav {
     transform: scale(1.05);
 }
 
-/* Modal (usado en contacto.html) */
+/* Modal (usado en carrito.html y contacto.html) */
 .modal {
     display: none;
     position: fixed;
@@ -236,84 +236,75 @@ nav.bottom-nav {
     z-index: 2000;
 }
 
+.modal.flex {
+    display: flex; /* Activa el modal */
+}
+
 .modal-content {
     background-color: var(--gris-elegante);
     border-radius: 12px;
     max-width: 90%;
     width: 100%;
+    max-width: 400px; /* Ancho máximo para mejor control */
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--dorado-oscuro);
+    padding: 1.5rem;
 }
 
 #modal-content {
-    padding: 1.5rem;
-    text-align: center;
-    position: relative;
+    background-color: var(--gris-elegante); /* Color consistente */
+    border-radius: 12px;
 }
 
 #modal-title {
     color: var(--dorado-principal);
     font-size: 1.6rem;
     font-weight: 700;
-    margin: 0 0 0.5rem;
-}
-
-#modal-price {
-    color: var(--dorado-principal);
-    font-size: 1.4rem;
-    font-weight: 600;
     margin: 0 0 1rem;
-    background-color: rgba(255, 215, 0, 0.1);
-    padding: 0.2rem 0.6rem;
-    border-radius: 6px;
-    display: inline-block;
 }
 
-#modal-description {
+#modal-message {
     color: var(--texto-blanco);
     font-size: 1.1rem;
     line-height: 1.5;
     margin: 0 0 1.5rem;
-    text-align: justify;
 }
 
 .modal-buttons {
     display: flex;
-    justify-content: space-around;
-    gap: 1rem;
+    justify-content: center; /* Centra los botones horizontalmente */
+    gap: 1rem; /* Espacio entre botones */
+    margin-top: 1rem;
 }
 
-.add-service-btn {
+#modal-cancel,
+#modal-confirm {
     background: var(--degradado-dorado);
     color: var(--texto-negro);
-    padding: 0.6rem 1.2rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
-    text-transform: uppercase;
+    border: none;
     transition: transform 0.2s ease, background 0.3s ease;
+    flex: 1; /* Igual ancho para ambos botones */
+    text-align: center;
 }
 
-.add-service-btn:hover {
+#modal-cancel:hover,
+#modal-confirm:hover {
     color: var(--texto-blanco);
     transform: scale(1.05);
 }
 
-#modal-close {
+#modal-cancel {
     background: var(--gris-elegante);
-    color: var(--texto-blanco);
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
     border: 1px solid var(--dorado-oscuro);
 }
 
-#modal-close:hover {
-    background-color: var(--dorado-oscuro);
-    transform: scale(1.05);
+#modal-cancel:hover {
+    background: var(--dorado-oscuro);
 }
 
 /* Estilos para inicio.html */
@@ -397,7 +388,8 @@ nav.bottom-nav {
     color: var(--dorado-principal);
     font-weight: bold;
 }
-/*//////////social icons¨*/
+
+/* Social icons */
 .social-icons {
     display: flex;
     justify-content: center;
@@ -801,7 +793,7 @@ nav.bottom-nav {
     width: 100%;
     padding: 0.75rem;
     border: 2px solid var(--gris-elegante);
-    color:var(--texto-negro);
+    color: var(--texto-negro);
     border-radius: 8px;
     font-size: 1rem;
     background-color: var(--gris-claro);

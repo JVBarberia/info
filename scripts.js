@@ -15,8 +15,8 @@ const BUSINESS_CONFIG = {
         plin: "assets/img/qr/plin-qr.png"
     },
     paymentInstructions: {
-        yape: "Escanea el QR de Yape y realiza el pago del depósito.",
-        //plin: "Escanea el QR de Plin y realiza el pago del depósito."
+        yape: "Escanea el QR de Yape para realizar el pago completo de tu reserva.",
+        plin: "Escanea el QR de Plin para realizar el pago completo de tu reserva."
     },
     schedules: {
         monday: [{ start: "09:00", end: "22:00" }],
@@ -300,20 +300,21 @@ function initCarrito() {
             }
 
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const deposit = (total * 0.5).toFixed(2);
 
             let modalText = `
-                <p><strong>Cliente:</strong> ${name}</p>
-                <p><strong>Fecha:</strong> ${date}</p>
-                <p><strong>Hora:</strong> ${time}</p>
-                <p><strong>Barbero:</strong> ${barber}</p>
-                <p><strong>Servicios:</strong></p>
-                <ul class="list-disc list-inside">
-                    ${cart.map(item => `<li>${item.name}: S/ ${item.price.toFixed(2)}</li>`).join('')}
-                </ul>
-                <p><strong>Total:</strong> S/ ${total.toFixed(2)}</p>
-                <p><strong>Depósito (50%):</strong> S/ ${deposit}</p>
-                <p><strong>Método de pago:</strong> ${payment}</p>
+                <div class="text-left">
+                    <p class="mb-2"><strong class="text-yellow-400">Cliente:</strong> ${name}</p>
+                    <p class="mb-2"><strong class="text-yellow-400">Fecha:</strong> ${date}</p>
+                    <p class="mb-2"><strong class="text-yellow-400">Hora:</strong> ${time}</p>
+                    <p class="mb-2"><strong class="text-yellow-400">Barbero:</strong> ${barber}</p>
+                    <p class="mb-2"><strong class="text-yellow-400">Servicios:</strong></p>
+                    <ul class="list-disc list-inside mb-2">
+                        ${cart.map(item => `<li>${item.name}: S/ ${item.price.toFixed(2)}</li>`).join('')}
+                    </ul>
+                    <p class="mb-2"><strong class="text-yellow-400">Total a pagar:</strong> S/ ${total.toFixed(2)}</p>
+                    <p class="mb-2"><strong class="text-yellow-400">Método de pago:</strong> ${payment}</p>
+                    <p class="text-sm text-gray-300">Por favor, realiza el pago completo para confirmar tu reserva.</p>
+                </div>
             `;
             if (modalContent) modalContent.innerHTML = modalText;
             if (confirmationModal) {
@@ -330,7 +331,7 @@ function initCarrito() {
 
             if (modalConfirm) {
                 modalConfirm.addEventListener('click', () => {
-                    let message = `💈 *Nueva Cita - ${BUSINESS_CONFIG.businessName}* 💈\n\n`;
+                    let message = `💈 *${BUSINESS_CONFIG.businessName} - Nueva Reserva* 💈\n\n`;
                     message += `👤 *Cliente:* ${name}\n`;
                     message += `📅 *Fecha:* ${date}\n`;
                     message += `⏰ *Hora:* ${time}\n`;
@@ -340,10 +341,9 @@ function initCarrito() {
                     cart.forEach(item => {
                         message += `- ${item.name}: S/ ${item.price.toFixed(2)}\n`;
                     });
-                    message += `\n💵 *Total:* S/ ${total.toFixed(2)}\n`;
-                    message += `💰 *Depósito (50%):* S/ ${deposit}\n`;
+                    message += `\n💵 *Total a pagar:* S/ ${total.toFixed(2)}\n`;
                     message += `💳 *Método de pago:* ${payment}\n`;
-                    message += `📲 *Instrucción:* ${payment === "QR de Yape" ? BUSINESS_CONFIG.paymentInstructions.yape : BUSINESS_CONFIG.paymentInstructions.plin} Envía el comprobante al WhatsApp.\n`;
+                    message += `📲 *Instrucción:* ${payment === "QR de Yape" ? BUSINESS_CONFIG.paymentInstructions.yape : BUSINESS_CONFIG.paymentInstructions.plin} Envía el comprobante al WhatsApp para confirmar tu reserva.\n`;
 
                     const whatsappUrl = `https://wa.me/${BUSINESS_CONFIG.phoneNumber}?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
@@ -354,7 +354,7 @@ function initCarrito() {
                     if (paymentQr) paymentQr.classList.add('hidden');
                     confirmationModal.classList.add('hidden');
                     confirmationModal.classList.remove('flex');
-                    showNotification('Cita enviada', 'Tu reserva ha sido enviada por WhatsApp.');
+                    showNotification('Reserva enviada', 'Tu reserva ha sido enviada por WhatsApp. ¡Gracias por elegirnos!');
                 }, { once: true });
             }
         });
