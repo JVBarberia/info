@@ -1,7 +1,7 @@
 // === Configuración editable para personalizar el negocio ===
 const BUSINESS_CONFIG = {
     businessName: "Barbería Jesús Vilca",
-    phoneNumber: "+51974820648",
+    phoneNumber: "+51920850690",
     mapCoordinates: [-4.5800212, -81.2728562],
     mapZoom: 15,
     mapAddress: "Mariscal Castilla D-12",
