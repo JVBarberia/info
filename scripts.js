@@ -72,8 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showNotification(title, message, action = null) {
     const notification = document.createElement('div');
-    notification.classList.add('notification-modal-content');
+    notification.classList.add('notification-modal-content', 'relative');
     notification.innerHTML = `
+        <button id="notification-close" class="absolute top-4 right-4 text-white hover:text-yellow-400">
+            <i class="fas fa-times"></i>
+        </button>
         <h3>${title}</h3>
         <p>${message}</p>
         ${action ? `<button id="notification-action">${action.text}</button>` : ''}
@@ -82,13 +85,20 @@ function showNotification(title, message, action = null) {
     modal.classList.add('notification-modal', 'flex');
     modal.appendChild(notification);
     document.body.appendChild(modal);
+
+    const closeButton = notification.querySelector('#notification-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            modal.remove();
+        });
+    }
+
     if (action) {
         document.getElementById('notification-action').addEventListener('click', () => {
             action.callback();
             modal.remove();
         });
     }
-    setTimeout(() => modal.remove(), 5000);
 }
 
 function triggerCartJump() {
@@ -248,6 +258,7 @@ function initCarrito() {
     const modalMessage = document.getElementById('modal-message');
     const modalCancel = document.getElementById('modal-cancel');
     const modalConfirm = document.getElementById('modal-confirm');
+    const modalClose = document.getElementById('modal-close');
     const dateInput = document.getElementById('order-date');
 
     if (checkoutBtn && detailsStep && itemsStep && detailsBack && orderForm) {
@@ -285,6 +296,13 @@ function initCarrito() {
             dateInput.setAttribute('min', today);
             dateInput.addEventListener('change', (e) => {
                 generateTimeOptions(e.target.value);
+            });
+        }
+
+        if (modalClose) {
+            modalClose.addEventListener('click', () => {
+                confirmationModal.classList.add('hidden');
+                confirmationModal.classList.remove('flex');
             });
         }
 
@@ -384,8 +402,11 @@ function initServicios() {
     if (allItemsContainer) {
         const promoItems = document.querySelectorAll('.category[data-category="promociones"] .item');
         promoItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
-        const otherItems = document.querySelectorAll('.category[data-category="cortes"] .item, .category[data-category="cuidado"] .item');
-        otherItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
+        const cortesItems = document.querySelectorAll('.category[data-category="cortes"] .item');
+        cortesItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
+        const cuidadoItems = document.querySelectorAll('.category[data-category="cuidado"] .item');
+        cuidadoItems.forEach(item => allItemsContainer.appendChild(item.cloneNode(true)));
+        
     }
 
     tabButtons.forEach(button => {
@@ -420,33 +441,33 @@ function initServicios() {
             updateCartCount();
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            if (name.includes('Corte')) {
+            if (name.includes('Corte') && !name.includes('Barba') && !name.includes('Ceja')) {
                 showNotification(
                     'Servicio añadido',
-                    `${name} se ha añadido al carrito. ¿Te gustaría agregar un afeitado por S/ 15.00?`,
+                    `${name} se ha añadido al carrito. ¿Te gustaría agregar un arreglo de barba por S/ 15.00?`,
                     {
-                        text: 'Añadir afeitado',
+                        text: 'Añadir Barba',
                         callback: () => {
-                            cart.push({ name: 'Afeitado', price: 15.00, image: `${BUSINESS_CONFIG.servicesImagePath}afeitado1.jpg`, quantity: 1 });
+                            cart.push({ name: 'Barba', price: 15.00, image: `${BUSINESS_CONFIG.servicesImagePath}barba.jpg`, quantity: 1 });
                             triggerCartJump();
                             updateCartCount();
                             localStorage.setItem('cart', JSON.stringify(cart));
-                            showNotification('Afeitado añadido', 'Se añadió un afeitado al carrito.');
+                            showNotification('Barba añadida', 'Se añadió un arreglo de barba al carrito.');
                         }
                     }
                 );
             } else if (cart.length === 2) {
                 showNotification(
                     'Oferta especial',
-                    'Has añadido 2 servicios. ¿Quieres el combo Corte + Afeitado por S/ 30.00?',
+                    'Has añadido 2 servicios. ¿Quieres el combo Corte + Barba por S/ 30.00?',
                     {
                         text: 'Aceptar promoción',
                         callback: () => {
-                            cart = [{ name: 'Corte + Afeitado', price: 30.00, image: `${BUSINESS_CONFIG.servicesImagePath}promo1.jpg`, quantity: 1 }];
+                            cart = [{ name: 'Corte + Barba', price: 30.00, image: `${BUSINESS_CONFIG.servicesImagePath}corte_barba.jpg`, quantity: 1 }];
                             triggerCartJump();
                             updateCartCount();
                             localStorage.setItem('cart', JSON.stringify(cart));
-                            showNotification('Promoción añadida', 'Se aplicó el combo Corte + Afeitado.');
+                            showNotification('Promoción añadida', 'Se aplicó el combo Corte + Barba.');
                         }
                     }
                 );
@@ -501,7 +522,6 @@ function initContacto() {
         });
 
         visitBtn.addEventListener('click', () => {
-            // Abrir Google Maps directamente con la dirección del negocio
             const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BUSINESS_CONFIG.mapAddress)}`;
             window.open(mapsUrl, '_blank');
             locationModal.classList.add('hidden');

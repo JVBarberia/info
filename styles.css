@@ -189,9 +189,10 @@ nav.bottom-nav {
     max-width: 90%;
     width: 300px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-    padding: 1.5rem;
+    padding: 2rem;
     text-align: center;
     border: 1px solid var(--dorado-oscuro);
+    position: relative;
 }
 
 .notification-modal-content h3 {
@@ -199,6 +200,7 @@ nav.bottom-nav {
     font-size: 1.6rem;
     font-weight: 700;
     margin: 0 0 1rem;
+    text-align: center; /* Asegurar centrado */
 }
 
 .notification-modal-content p {
@@ -208,7 +210,7 @@ nav.bottom-nav {
     margin: 0 0 1.5rem;
 }
 
-.notification-modal-content button {
+.notification-modal-content button#notification-action {
     background: var(--degradado-dorado);
     color: var(--texto-negro);
     padding: 0.6rem 1.2rem;
@@ -217,9 +219,28 @@ nav.bottom-nav {
     transition: transform 0.2s ease;
 }
 
-.notification-modal-content button:hover {
+.notification-modal-content button#notification-action:hover {
     color: var(--texto-blanco);
     transform: scale(1.05);
+}
+
+/* Estilo para la "X" en el modal de notificaciones */
+#notification-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--texto-blanco);
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10; /* Asegurar que esté sobre el contenido */
+}
+
+#notification-close:hover {
+    color: var(--dorado-principal);
 }
 
 /* Modal (usado en carrito.html y contacto.html) */
@@ -245,17 +266,22 @@ nav.bottom-nav {
     border-radius: 12px;
     max-width: 90%;
     width: 100%;
-    max-width: 400px; /* Ancho máximo para mejor control */
+    max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--dorado-oscuro);
-    padding: 1.5rem;
+    padding: 2rem;
+}
+
+.modal-content .fa-times {
+    font-size: 1.25rem;
 }
 
 #modal-content {
-    background-color: var(--gris-elegante); /* Color consistente */
+    background-color: var(--gris-elegante);
     border-radius: 12px;
+    position: relative;
 }
 
 #modal-title {
@@ -263,6 +289,7 @@ nav.bottom-nav {
     font-size: 1.6rem;
     font-weight: 700;
     margin: 0 0 1rem;
+    text-align: center; /* Asegurar centrado */
 }
 
 #modal-message {
@@ -274,8 +301,8 @@ nav.bottom-nav {
 
 .modal-buttons {
     display: flex;
-    justify-content: center; /* Centra los botones horizontalmente */
-    gap: 1rem; /* Espacio entre botones */
+    justify-content: center;
+    gap: 1rem;
     margin-top: 1rem;
 }
 
@@ -303,13 +330,42 @@ nav.bottom-nav {
     transform: scale(1.05);
 }
 
-#modal-cancel {
-    background: var(--gris-elegante);
-    border: 1px solid var(--dorado-oscuro);
-}
-
 #modal-cancel:hover {
     background: var(--dorado-oscuro);
+}
+
+/* Estilo para la "X" en el modal de confirmación */
+#modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--texto-blanco);
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10; /* Asegurar que esté sobre el contenido */
+}
+
+#modal-close:hover {
+    color: var(--dorado-principal);
+}
+
+/* Proteger el botón "Cerrar" del modal de detalles */
+#modal-close:not(.absolute) {
+    background: var(--degradado-dorado);
+    color: var(--texto-negro);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+}
+
+#modal-close:not(.absolute):hover {
+    color: var(--texto-blanco);
+    transform: scale(1.05);
 }
 
 /* Estilos para inicio.html */
@@ -355,17 +411,17 @@ nav.bottom-nav {
 
 .schedule-highlight {
     display: flex;
-    flex-direction: column; /* Apilado vertical */
-    gap: 1.5rem; /* Espacio entre bloques */
+    flex-direction: column;
+    gap: 1.5rem;
     margin-bottom: 1.5rem;
-    max-width: 400px; /* Limita el ancho para no sobrecargar */
+    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .schedule-block {
     background: var(--gris-elegante);
-    border: 2px solid var(--dorado-oscuro); /* Marco dorado */
+    border: 2px solid var(--dorado-oscuro);
     border-radius: 8px;
     padding: 1rem;
     text-align: center;
@@ -376,17 +432,16 @@ nav.bottom-nav {
     font-size: 1.5rem;
     color: var(--dorado-principal);
     position: absolute;
-    top: -0.75rem; /* Ícono arriba */
+    top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
-    /* Quité el fondo negro y el padding para que el ícono sea limpio */
 }
 
 .schedule-text {
     font-family: 'Arial', sans-serif;
     font-size: 1rem;
     color: var(--texto-blanco);
-    margin-top: 1rem; /* Espacio para el ícono */
+    margin-top: 1rem;
 }
 
 .schedule-text strong {
@@ -406,22 +461,22 @@ nav.bottom-nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Tamaño fijo para botones redondos */
+    width: 40px;
     height: 40px;
-    background-color: var(--gris-elegante); /* Fondo gris elegante */
-    color: var(--dorado-oscuro); /* Color inicial */
-    font-size: 1.25rem; /* Tamaño del ícono */
-    border-radius: 50%; /* Redondeado completo */
-    border: 2px solid var(--dorado-oscuro); /* Borde sutil */
-    transition: all 0.3s ease; /* Transición suave */
-    text-decoration: none; /* Sin subrayado */
+    background-color: var(--gris-elegante);
+    color: var(--dorado-oscuro);
+    font-size: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--dorado-oscuro);
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .social-btn:hover {
-    background-color: var(--dorado-principal); /* Fondo dorado al pasar el ratón */
-    color: var(--texto-negro); /* Ícono negro para contraste */
-    border-color: var(--dorado-principal); /* Borde dorado */
-    transform: scale(1.1); /* Leve aumento para interacción */
+    background-color: var(--dorado-principal);
+    color: var(--texto-negro);
+    border-color: var(--dorado-principal);
+    transform: scale(1.1);
 }
 
 .action-buttons {
@@ -872,7 +927,7 @@ nav.bottom-nav {
 
 /* Ítems más compactos */
 .item {
-    background-color: var(--gris-elegante);
+    background-color: var(--texto-negro);
     border-radius: 8px;
     padding: 0.75rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -952,8 +1007,8 @@ nav.bottom-nav {
 /* Promociones destacadas */
 .promo-item {
     position: relative;
-    background-color: rgba(255, 215, 0, 0.1);
-    border: 2px solid var(--dorado-principal);
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--dorado-principal);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -1006,7 +1061,7 @@ nav.bottom-nav {
     margin-bottom: 1.5rem;
 }
 
-#modal-close {
+#modal-close:not(.absolute) {
     background: var(--degradado-dorado);
     color: var(--texto-negro);
     padding: 0.5rem 1rem;
@@ -1015,7 +1070,7 @@ nav.bottom-nav {
     transition: transform 0.2s ease;
 }
 
-#modal-close:hover {
+#modal-close:not(.absolute):hover {
     color: var(--texto-blanco);
     transform: scale(1.05);
 }
